@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -46,12 +47,20 @@ class UsersController extends Controller
      */
     public function store(User $user, StoreUserRequest $request)
     {
+        // dd($request->all());
         //For demo purposes only. When creating user or inviting a user
         // you should create a generated random password and email it to the user
-        $user->create(array_merge($request->validated(), [
+        $data = $user->create(array_merge($request->validated(), [
             'password' => 'test'
         ]));
-        $user->syncRoles($request->get('role'));
+        // dd($data->id);
+        $role_data = [
+            'role_id' => $request->role,
+            'model_type' => 'App\Models\User',
+            'model_id' => $data->id
+        ];
+        DB::table('model_has_roles')->insert($role_data);
+        // $user->assignRole($request->get('role'));
 
         return redirect()->route('users.index')
             ->withSuccess(__('User created successfully.'));
