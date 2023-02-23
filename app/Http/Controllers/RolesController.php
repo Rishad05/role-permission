@@ -27,8 +27,8 @@ class RolesController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Route::getRoutes()->getRoutes();
-        dd($data);
+        // $data = Route::getRoutes()->getRoutes();
+        // dd($data);
         /* $routeCollection = Route::getRoutes()->getRoutesByName();
         // dd($routeCollection);
         foreach ($routeCollection as $value) {

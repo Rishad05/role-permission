@@ -12,10 +12,10 @@ class UsersController extends Controller
 {
     /**
      * Display all users
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index() 
+    public function index()
     {
         $users = User::latest()->paginate(10);
 
@@ -24,29 +24,34 @@ class UsersController extends Controller
 
     /**
      * Show form for creating user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function create() 
+    public function create(User $user)
     {
-        return view('users.create');
+        // $roles = Role::all();
+        return view('users.create', [
+            'userRole' => $user->roles->pluck('name')->toArray(),
+            'roles' => Role::latest()->get()
+        ]);
     }
 
     /**
      * Store a newly created user
-     * 
+     *
      * @param User $user
      * @param StoreUserRequest $request
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(User $user, StoreUserRequest $request) 
+    public function store(User $user, StoreUserRequest $request)
     {
         //For demo purposes only. When creating user or inviting a user
         // you should create a generated random password and email it to the user
         $user->create(array_merge($request->validated(), [
-            'password' => 'test' 
+            'password' => 'test'
         ]));
+        $user->syncRoles($request->get('role'));
 
         return redirect()->route('users.index')
             ->withSuccess(__('User created successfully.'));
@@ -54,12 +59,12 @@ class UsersController extends Controller
 
     /**
      * Show user data
-     * 
+     *
      * @param User $user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user) 
+    public function show(User $user)
     {
         return view('users.show', [
             'user' => $user
@@ -68,12 +73,12 @@ class UsersController extends Controller
 
     /**
      * Edit user data
-     * 
+     *
      * @param User $user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user) 
+    public function edit(User $user)
     {
         return view('users.edit', [
             'user' => $user,
@@ -84,13 +89,13 @@ class UsersController extends Controller
 
     /**
      * Update user data
-     * 
+     *
      * @param User $user
      * @param UpdateUserRequest $request
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(User $user, UpdateUserRequest $request) 
+    public function update(User $user, UpdateUserRequest $request)
     {
         $user->update($request->validated());
 
@@ -102,12 +107,12 @@ class UsersController extends Controller
 
     /**
      * Delete user data
-     * 
+     *
      * @param User $user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user) 
+    public function destroy(User $user)
     {
         $user->delete();
 
@@ -146,7 +151,7 @@ middleware
 php artisan make:middleware PermissionMiddleware
 
 register middleware
-- 
+-
 
 routes
 
